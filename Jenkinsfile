@@ -2,8 +2,10 @@ pipeline {
     agent any
     stages {
         stage('Checkout') {
-            checkout scm
-            stash includes:'**', name:'ws'
+            steps {
+                checkout scm
+                stash includes:'**', name:'ws'
+            }
         }
         stage('Build Backend') {
             agent {
@@ -80,3 +82,4 @@ pipeline {
 */
     }
 }
+
