@@ -26,6 +26,7 @@ pipeline {
             steps {
                 sh 'yarn install'
                 sh 'yarn global add gulp-cli'
+                sh 'npm rebuild phantomjs-prebuilt' // work around. see https://github.com/karma-runner/karma-phantomjs-launcher/issues/120
                 sh 'gulp test'
             }
             post {
