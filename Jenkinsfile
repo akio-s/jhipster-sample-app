@@ -11,6 +11,7 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn clean package'
+                    jacoco()
                 }
             }
         }
@@ -34,7 +35,8 @@ pipeline {
                 */
             }
         }
-        stage('Checkstyle') {
+        // Maybe jacoco + lcov?
+        stage('Static analysis') {
             agent {
                 docker {
                     image 'maven:3-alpine'
@@ -44,6 +46,7 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn pmd:pmd'
+                    pmd pattern:'target/pmd.xml'
                 }
             }
         }
