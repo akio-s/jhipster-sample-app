@@ -9,8 +9,10 @@ pipeline {
         }
         stage('Build Backend') {
             agent {
-                docker 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2'
+                docker {
+                    image 'maven:3-alpine'
+                    args '-v /root/.m2:/root/.m2'
+                }
             }
             steps {
                 withMaven {
@@ -41,8 +43,10 @@ pipeline {
         }
         stage('Checkstyle') {
             agent {
-                docker 'maven:3-alpine'
-                args '-v /root/.m2:/root/.m2'
+                docker {
+                    image 'maven:3-alpine'
+                    args '-v /root/.m2:/root/.m2'
+                }
             }
             steps {
                 unstash 'ws'
