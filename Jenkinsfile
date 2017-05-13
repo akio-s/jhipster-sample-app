@@ -11,8 +11,10 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn clean package'
-                    jacoco()
                 }
+            }
+            post {
+                jacoco()
             }
         }
         stage('Test Frontend') {
@@ -34,6 +36,9 @@ pipeline {
                     [33m13 05 2017 18:30:23.175:WARN [launcher]: [39mPhantomJS was not killed by SIGKILL in 2000 ms, continuing.                  
                 */
             }
+            post {
+                junit 'target/test-results/karma/*.xml'
+            }
         }
         // Maybe jacoco + lcov?
         stage('Static analysis') {
@@ -46,8 +51,10 @@ pipeline {
             steps {
                 withMaven {
                     sh 'mvn pmd:pmd'
-                    pmd pattern:'target/pmd.xml'
                 }
+            }
+            post {
+                pmd pattern:'target/pmd.xml'
             }
         }
     /*
