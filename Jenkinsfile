@@ -77,7 +77,6 @@ pipeline {
             agent any
             steps {
                 input message: 'Deploy to production?', ok: 'Fire zee missiles!'
-                echo 'Let's pretend a production deployment is happening'
                 sh './deploy.sh prod'
             }
         }
