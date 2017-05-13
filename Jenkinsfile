@@ -14,7 +14,9 @@ pipeline {
                 }
             }
             post {
-                jacoco()
+                always {
+                    jacoco()
+                }
             }
         }
         stage('Test Frontend') {
@@ -37,7 +39,9 @@ pipeline {
                 */
             }
             post {
-                junit 'target/test-results/karma/*.xml'
+                always {
+                    junit 'target/test-results/karma/*.xml'
+                }
             }
         }
         // Maybe jacoco + lcov?
@@ -54,7 +58,9 @@ pipeline {
                 }
             }
             post {
-                pmd pattern:'target/pmd.xml'
+                always {
+                    pmd pattern:'target/pmd.xml'
+                }
             }
         }
     /*
