@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3-alpine'
+            args '-v /root/.m2:/root/.m2'
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -8,12 +13,6 @@ pipeline {
             }
         }
         stage('Build Backend') {
-            agent {
-                docker {
-                    image 'maven:3-alpine'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }
             steps {
                 withMaven {
                     sh 'mvn clean package'
@@ -42,16 +41,9 @@ pipeline {
             }
         }
         stage('Checkstyle') {
-            agent {
-                docker {
-                    image 'maven:3-alpine'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }
             steps {
-                unstash 'ws'
                 withMaven {
-                    sh 'mvn checkstyle:check'
+                    sh 'mvn pmd:pmd'
                 }
             }
         }
