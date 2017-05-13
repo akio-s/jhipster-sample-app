@@ -66,9 +66,10 @@ pipeline {
             }
             steps {
                 sh './deploy.sh qa'
-                withMaven {
-                    sh 'mvn gatling:execute -DbaseURL=http://app1.qa.acme.com/'
-                }
+                // This is how you'd run Gatling, but the domain name is fake, so I can't run it for real
+                // withMaven {
+                //     sh 'mvn gatling:execute -DbaseURL=http://app1.qa.acme.com/'
+                // }
             }
         }
         stage('Deploy to Production') {
