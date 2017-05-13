@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // checkout scm
-                stash includes:'**', name:'ws'
+                // stash includes:'**', name:'ws'
             }
         }
         stage('Build Backend') {
@@ -25,7 +25,6 @@ pipeline {
                 docker 'shfx/node-phantomjs'
             }
             steps {
-                unstash 'ws'
                 sh 'yarn install'
                 sh 'yarn global add gulp-cli'
                 sh 'gulp test'
@@ -49,9 +48,8 @@ pipeline {
                 }
             }
             steps {
-                unstash 'ws'
                 withMaven {
-                    sh 'mvn checkstyle:check'
+                    sh 'mvn pmd:pmd'
                 }
             }
         }
