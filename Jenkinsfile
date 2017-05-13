@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stage('Build Backend') {
+        stage('Build') {
             agent {
                 docker {
                     image 'maven:3-alpine'
@@ -27,16 +27,6 @@ pipeline {
                 sh 'yarn install'
                 sh 'yarn global add gulp-cli'
                 sh 'gulp test'
-                /*
-                  This fails:
-                    [18:29:17] Starting 'test'...
-                    [32m13 05 2017 18:29:19.163:INFO [karma]: [39mKarma v1.2.0 server started at http://localhost:9876/
-                    [32m13 05 2017 18:29:19.164:INFO [launcher]: [39mLaunching browser PhantomJS with unlimited concurrency
-                    [32m13 05 2017 18:29:19.169:INFO [launcher]: [39mStarting browser PhantomJS
-                    [33m13 05 2017 18:30:19.172:WARN [launcher]: [39mPhantomJS have not captured in 60000 ms, killing.
-                    [33m13 05 2017 18:30:21.173:WARN [launcher]: [39mPhantomJS was not killed in 2000 ms, sending SIGKILL.
-                    [33m13 05 2017 18:30:23.175:WARN [launcher]: [39mPhantomJS was not killed by SIGKILL in 2000 ms, continuing.                  
-                */
             }
             post {
                 always {
@@ -45,7 +35,7 @@ pipeline {
             }
         }
         // Maybe jacoco + lcov?
-        stage('Static analysis') {
+        stage('Static Analysis') {
             agent {
                 docker {
                     image 'maven:3-alpine'
@@ -63,47 +53,34 @@ pipeline {
                 }
             }
         }
-    /*
-        stage('Backend') {
-            agent {
-                docker 'maven:3-alpine'
+        stage('Deploy to QA') {
+            when {
+                branch 'qa'
             }
-            steps {
-                parallel(
-                    'Performance' : {
-                        unstash 'ws'
-                        unstash 'war'
-                        sh './mvnw -B gatling:execute'
-                    })
-            }
-        }
-        stage('Build Container') {
             agent {
                 docker {
                     image 'maven:3-alpine'
-                    args '-v /root/.m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /root/.m2:/root/.m2'
                 }
             }
             steps {
-                unstash 'ws'
-                unstash 'war'
-                sh './mvnw -B docker:build'
+                sh './deploy.sh qa'
+                withMaven {
+                    sh 'mvn gatling:execute -DbaseURL=http://app1.qa.acme.com/'
+                }
             }
         }
-        stage('Deploy to Staging') {
-            agent any
-            steps {
-                echo "Let's pretend a deployment is happening"
+        stage('Deploy to Production') {
+            when {
+                branch 'production'
             }
-        }
-        stage('Deploy to production') {
             agent any
             steps {
                 input message: 'Deploy to production?', ok: 'Fire zee missiles!'
-                echo "Let's pretend a production deployment is happening"
+                echo 'Let's pretend a production deployment is happening'
+                sh './deploy.sh prod'
             }
         }
-*/
     }
 }
 
